@@ -6,7 +6,7 @@ class MovesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Abilities')),
+      appBar: AppBar(title: const Text('Moves')),
       body: Padding(
         padding: EdgeInsetsGeometry.all(10),
         child: GridView.count(

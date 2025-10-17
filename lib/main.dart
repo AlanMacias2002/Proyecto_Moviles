@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Poke-App',
       home: Scaffold(
-        appBar: AppBar(title: const Text('Material App Bar')),
+        appBar: AppBar(title: const Text('Poké-App')),
         body: Center(child: HomeWidget()),
       ),
     );
