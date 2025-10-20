@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:proyecto_moviles/Models/party_model.dart';
 import 'package:proyecto_moviles/TestData/Data.dart';
 import 'package:proyecto_moviles/Widgets/party.dart';
+import 'package:proyecto_moviles/Screens/new_edit_partyScreen.dart';
 
 class PartiesScreen extends StatelessWidget {
 	const PartiesScreen({super.key});
@@ -24,10 +25,11 @@ class PartiesScreen extends StatelessWidget {
 							child: InkWell(
 								borderRadius: BorderRadius.circular(8),
 								onTap: () {
-									// Acción temporal hasta definir comportamiento
-									ScaffoldMessenger.of(context).showSnackBar(
-										const SnackBar(content: Text('Botón + presionado')),
-									);
+													Navigator.of(context).push(
+														MaterialPageRoute(
+															builder: (_) => const NewEditPartyScreen(),
+														),
+													);
 								},
 								child: Ink(
 									width: 36,
@@ -49,11 +51,13 @@ class PartiesScreen extends StatelessWidget {
 				children: [
 					PartyCard(
 						party: demoParty,
-						onTap: () {
-							ScaffoldMessenger.of(context).showSnackBar(
-								const SnackBar(content: Text('Abrir detalles de la party (demo)')),
-							);
-						},
+									onTap: () {
+										Navigator.of(context).push(
+											MaterialPageRoute(
+												builder: (_) => NewEditPartyScreen(party: demoParty),
+											),
+										);
+									},
 					),
 				],
 			),
