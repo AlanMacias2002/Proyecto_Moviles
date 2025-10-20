@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_moviles/TestData/Data.dart';
 import 'package:proyecto_moviles/Widgets/pokemonIcon.dart';
+import 'package:proyecto_moviles/Screens/pokemonData.dart';
 
 class PokedexScreen extends StatelessWidget {
 	const PokedexScreen({super.key});
@@ -52,7 +53,17 @@ class PokedexScreen extends StatelessWidget {
 									itemCount: samplePokemons.length,
 									itemBuilder: (context, index) {
 										final p = samplePokemons[index];
-										return PokemonIcon(id: p.id);
+										return InkWell(
+											onTap: () {
+												Navigator.push(
+													context,
+													MaterialPageRoute(
+														builder: (_) => const PokemonDataScreen(),
+													),
+												);
+											},
+											child: PokemonIcon(id: p.id),
+										);
 									},
 								),
 							),

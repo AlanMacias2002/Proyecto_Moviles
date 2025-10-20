@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:proyecto_moviles/Screens/abilitiesScreen.dart';
 import 'package:proyecto_moviles/Screens/movesScreen.dart';
 import 'package:proyecto_moviles/Screens/partiesScreen.dart';
-import 'package:proyecto_moviles/Screens/pokedex.dart';
+import 'package:proyecto_moviles/Screens/pokedexScreen.dart';
 import 'package:proyecto_moviles/Widgets/loginScreen.dart';
 
 class HomeWidget extends StatefulWidget {
