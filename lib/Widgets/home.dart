@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_moviles/Screens/abilitiesScreen.dart';
 import 'package:proyecto_moviles/Screens/movesScreen.dart';
+import 'package:proyecto_moviles/Screens/partiesScreen.dart';
+import 'package:proyecto_moviles/Screens/pokedex.dart';
 
 class HomeWidget extends StatefulWidget {
   const HomeWidget({super.key});
@@ -28,7 +30,7 @@ class HomeWidgetState extends State<HomeWidget> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const AbilitiesScreen(),
+                  builder: (context) => PokedexScreen(),
                 ),
               );
             },
@@ -62,7 +64,12 @@ class HomeWidgetState extends State<HomeWidget> {
             title: 'Parties',
             color: Colors.purple,
             icon: Icons.group,
-            onTap: () {},
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => PartiesScreen()),
+              );
+            },
           ),
         ],
       ),
