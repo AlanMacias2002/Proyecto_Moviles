@@ -51,7 +51,7 @@ class _NewEditPartyScreenState extends State<NewEditPartyScreen> {
 											onPressed: () {
 												Navigator.of(context).push(
 													MaterialPageRoute(
-														builder: (_) => const ShareQrScreen(),
+														builder: (_) => ShareQrScreen(),
 													),
 												);
 											},
