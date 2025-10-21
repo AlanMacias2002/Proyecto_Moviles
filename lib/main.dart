@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_moviles/Widgets/home.dart';
 import 'package:proyecto_moviles/Widgets/loginScreen.dart';
-import 'package:proyecto_moviles/Screens/settingScreen.dart';
 import 'package:camera/camera.dart';
 
 late List<CameraDescription> cameras;
 
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  cameras = await availableCameras(); // Load available cameras
-  runApp(const MyApp());
-}
+// Future<void> main() async {
+//   WidgetsFlutterBinding.ensureInitialized();
+//   cameras = await availableCameras(); // Load available cameras
+//   runApp(const MyApp());
+// }
+
+void main() => runApp(const MyApp());
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -22,9 +23,11 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   ThemeMode _themeMode = ThemeMode.light;
 
-  void _setThemeMode(ThemeMode mode) {
+  void _toggleTheme() {
     setState(() {
-      _themeMode = mode;
+      _themeMode = _themeMode == ThemeMode.light
+          ? ThemeMode.dark
+          : ThemeMode.light;
     });
   }
 
@@ -50,7 +53,9 @@ class _MyAppState extends State<MyApp> {
                     context: context,
                     isScrollControlled: true,
                     shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(16),
+                      ),
                     ),
                     builder: (ctx) => const Padding(
                       padding: EdgeInsets.only(top: 8),
@@ -60,21 +65,14 @@ class _MyAppState extends State<MyApp> {
                 },
               ),
             ),
-            Builder(
-              builder: (context) => IconButton(
-                icon: const Icon(Icons.settings),
-                tooltip: 'Settings',
-                onPressed: () {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                      builder: (context) => SettingsScreen(
-                        themeMode: _themeMode,
-                        onThemeChanged: _setThemeMode,
-                      ),
-                    ),
-                  );
-                },
+            IconButton(
+              icon: Icon(
+                _themeMode == ThemeMode.dark
+                    ? Icons.dark_mode
+                    : Icons.light_mode,
               ),
+              onPressed: _toggleTheme,
+              tooltip: 'Toggle Dark Mode',
             ),
           ],
         ),

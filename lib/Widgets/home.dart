@@ -19,61 +19,60 @@ class HomeWidgetState extends State<HomeWidget> {
         Padding(
           padding: const EdgeInsets.all(16),
           child: GridView.count(
-            crossAxisCount: 2,
+            crossAxisCount: 1,
+            childAspectRatio: 2.5 / 1,
             crossAxisSpacing: 16,
             mainAxisSpacing: 16,
             children: [
-          _buildMenuButton(
-            context,
-            title: 'Pokédex',
-            color: Colors.redAccent,
-            icon: Icons.catching_pokemon,
-            onTap: () {
-              Navigator.push(
+              _buildMenuButton(
                 context,
-                MaterialPageRoute(
-                  builder: (context) => PokedexScreen(),
-                ),
-              );
-            },
-          ),
-          _buildMenuButton(
-            context,
-            title: 'Moves',
-            color: Colors.blueAccent,
-            icon: Icons.flash_on,
-            onTap: () {
-              Navigator.push(
+                title: 'Pokédex',
+                color: Colors.redAccent,
+                icon: Icons.catching_pokemon,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => PokedexScreen()),
+                  );
+                },
+              ),
+              _buildMenuButton(
                 context,
-                MaterialPageRoute(builder: (context) => MovesScreen()),
-              );
-            },
-          ),
-          _buildMenuButton(
-            context,
-            title: 'Abilities',
-            color: Colors.green,
-            icon: Icons.auto_awesome,
-            onTap: () {
-              Navigator.push(
+                title: 'Moves',
+                color: Colors.blueAccent,
+                icon: Icons.flash_on,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => MovesScreen()),
+                  );
+                },
+              ),
+              _buildMenuButton(
                 context,
-                MaterialPageRoute(builder: (context) => AbilitiesScreen()),
-              );
-            },
-          ),
-          _buildMenuButton(
-            context,
-            title: 'Parties',
-            color: Colors.purple,
-            icon: Icons.group,
-            onTap: () {
-              Navigator.push(
+                title: 'Abilities',
+                color: Colors.green,
+                icon: Icons.auto_awesome,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => AbilitiesScreen()),
+                  );
+                },
+              ),
+              _buildMenuButton(
                 context,
-                MaterialPageRoute(builder: (context) => PartiesScreen()),
-              );
-            },
-          ),
-        ],
+                title: 'Parties',
+                color: Colors.purple,
+                icon: Icons.group,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => PartiesScreen()),
+                  );
+                },
+              ),
+            ],
           ),
         ),
       ],
