@@ -118,9 +118,12 @@ class _LoginForm extends StatelessWidget {
 					SizedBox(
 						width: double.infinity,
 						child: ElevatedButton(
-							onPressed: onSubmit,
-							child: const Text('Iniciar sesión'),
-						),
+              onPressed: () {
+                Navigator.pop(context);
+                onSubmit();
+              },
+              child: const Text('Iniciar sesión'),
+            ),
 					),
 				],
 			),
@@ -175,9 +178,12 @@ class _RegisterForm extends StatelessWidget {
 					SizedBox(
 						width: double.infinity,
 						child: ElevatedButton(
-							onPressed: onSubmit,
-							child: const Text('Registrarse'),
-						),
+              onPressed: () {
+                Navigator.pop(context);
+                onSubmit();
+              },
+              child: const Text('Register'),
+            ),
 					),
 				],
 			),

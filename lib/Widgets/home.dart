@@ -3,7 +3,6 @@ import 'package:proyecto_moviles/Screens/abilitiesScreen.dart';
 import 'package:proyecto_moviles/Screens/movesScreen.dart';
 import 'package:proyecto_moviles/Screens/partiesScreen.dart';
 import 'package:proyecto_moviles/Screens/pokedexScreen.dart';
-import 'package:proyecto_moviles/Widgets/loginScreen.dart';
 
 class HomeWidget extends StatefulWidget {
   const HomeWidget({super.key});
@@ -75,36 +74,6 @@ class HomeWidgetState extends State<HomeWidget> {
             },
           ),
         ],
-          ),
-        ),
-        // Botón redondo pequeño, gris, en la esquina inferior izquierda
-        Positioned(
-          left: 16,
-          bottom: 16,
-          child: SizedBox(
-            width: 44,
-            height: 44,
-            child: Material(
-              color: Colors.grey[700],
-              shape: const CircleBorder(),
-              child: InkWell(
-                customBorder: const CircleBorder(),
-                onTap: () {
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-                    ),
-                    builder: (ctx) => const Padding(
-                      padding: EdgeInsets.only(top: 8),
-                      child: LoginScreen(),
-                    ),
-                  );
-                },
-                child: const Icon(Icons.person, color: Colors.white),
-              ),
-            ),
           ),
         ),
       ],

@@ -7,10 +7,10 @@ class PartyCard extends StatelessWidget {
   final VoidCallback? onTap;
 
   const PartyCard({
-    Key? key,
+    super.key,
     required this.party,
     this.onTap,
-  }) : super(key: key);
+  });
 
   IconData _getStyleIcon(TeamStyle style) {
     switch (style) {
@@ -44,8 +44,7 @@ class PartyCard extends StatelessWidget {
       case TeamStyle.libre:
         return Colors.purpleAccent;
       case TeamStyle.sinAsignar:
-      default:
-        return Colors.grey;
+      return Colors.grey;
     }
   }
 
