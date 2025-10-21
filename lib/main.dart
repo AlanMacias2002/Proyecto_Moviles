@@ -1,8 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_moviles/Widgets/home.dart';
 import 'package:proyecto_moviles/Widgets/loginScreen.dart';
+import 'package:camera/camera.dart';
 
-void main() => runApp(const MyApp());
+late List<CameraDescription> cameras;
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  cameras = await availableCameras(); // Load available cameras
+  runApp(const MyApp());
+}
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -16,8 +23,9 @@ class _MyAppState extends State<MyApp> {
 
   void _toggleTheme() {
     setState(() {
-      _themeMode =
-          _themeMode == ThemeMode.light ? ThemeMode.dark : ThemeMode.light;
+      _themeMode = _themeMode == ThemeMode.light
+          ? ThemeMode.dark
+          : ThemeMode.light;
     });
   }
 
@@ -25,10 +33,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Poke-App',
-      theme: ThemeData(
-        brightness: Brightness.light,
-        primarySwatch: Colors.red,
-      ),
+      theme: ThemeData(brightness: Brightness.light, primarySwatch: Colors.red),
       darkTheme: ThemeData(
         brightness: Brightness.dark,
         primarySwatch: Colors.red,
@@ -46,8 +51,9 @@ class _MyAppState extends State<MyApp> {
                     context: context,
                     isScrollControlled: true,
                     shape: const RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(16)),
+                      borderRadius: BorderRadius.vertical(
+                        top: Radius.circular(16),
+                      ),
                     ),
                     builder: (ctx) => const Padding(
                       padding: EdgeInsets.only(top: 8),
