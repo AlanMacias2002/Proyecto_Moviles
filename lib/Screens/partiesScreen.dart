@@ -3,6 +3,7 @@ import 'package:proyecto_moviles/Models/party_model.dart';
 import 'package:proyecto_moviles/TestData/Data.dart';
 import 'package:proyecto_moviles/Widgets/party.dart';
 import 'package:proyecto_moviles/Screens/new_edit_partyScreen.dart';
+import 'package:proyecto_moviles/Screens/QrScreen.dart';
 
 class PartiesScreen extends StatelessWidget {
 	const PartiesScreen({super.key});
@@ -20,6 +21,31 @@ class PartiesScreen extends StatelessWidget {
 				appBar: AppBar(
 					title: const Text('Parties'),
 					actions: [
+						// Botón QR (a la izquierda del '+')
+						Padding(
+							padding: const EdgeInsets.only(right: 8),
+							child: InkWell(
+								borderRadius: BorderRadius.circular(8),
+								onTap: () {
+										Navigator.of(context).push(
+											MaterialPageRoute(
+												builder: (_) => QrScreen(),
+											),
+										);
+								},
+								child: Ink(
+									width: 36,
+									height: 36,
+									decoration: BoxDecoration(
+										color: const Color.fromARGB(255, 0, 0, 0).withOpacity(0.15),
+										borderRadius: BorderRadius.circular(8),
+									),
+									child: const Center(
+										child: Icon(Icons.qr_code_2, color: Color.fromARGB(255, 0, 0, 0)),
+									),
+								),
+							),
+						),
 						Padding(
 							padding: const EdgeInsets.only(right: 12),
 							child: InkWell(

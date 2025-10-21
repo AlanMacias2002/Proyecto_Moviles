@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_moviles/Models/party_model.dart';
 import 'package:proyecto_moviles/Models/pokemons.dart';
+import 'package:proyecto_moviles/Screens/shareQrScreen.dart';
 
 class NewEditPartyScreen extends StatefulWidget {
 	const NewEditPartyScreen({super.key, this.party});
@@ -43,6 +44,18 @@ class _NewEditPartyScreenState extends State<NewEditPartyScreen> {
 			appBar: AppBar(
 				title: Text(isEdit ? 'Editar equipo' : 'Nuevo equipo'),
 				actions: [
+									if (isEdit)
+										IconButton(
+											icon: const Icon(Icons.qr_code_2),
+											tooltip: 'QR',
+											onPressed: () {
+												Navigator.of(context).push(
+													MaterialPageRoute(
+														builder: (_) => const ShareQrScreen(),
+													),
+												);
+											},
+										),
 					IconButton(
 						icon: const Icon(Icons.help_outline),
 						onPressed: () => _snack('funcionammiento accion'),
@@ -164,7 +177,7 @@ class _NewEditPartyScreenState extends State<NewEditPartyScreen> {
 						children: [
 							Expanded(
 								child: OutlinedButton(
-									onPressed: () => _snack('funcion cancelar'),
+									onPressed: () => Navigator.pop(context),
 									child: const Text('Cancelar'),
 								),
 							),
