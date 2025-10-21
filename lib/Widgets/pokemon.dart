@@ -22,9 +22,8 @@ class _PokemonState extends State<PokemonWidget> {
     MovesScreen(),
   ];
 
-    return Scaffold(
-      body: 
-      pages[currentPageIndex],
+    return Scaffold (
+      body: pages[currentPageIndex],
       bottomNavigationBar: NavigationBar(
         selectedIndex: currentPageIndex,
         onDestinationSelected: (int index) {
