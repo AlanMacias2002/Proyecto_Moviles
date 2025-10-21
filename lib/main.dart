@@ -2,8 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:proyecto_moviles/Widgets/home.dart';
 import 'package:proyecto_moviles/Widgets/loginScreen.dart';
 import 'package:proyecto_moviles/Screens/settingScreen.dart';
+import 'package:camera/camera.dart';
 
-void main() => runApp(const MyApp());
+late List<CameraDescription> cameras;
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  cameras = await availableCameras(); // Load available cameras
+  runApp(const MyApp());
+}
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -25,10 +32,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Poke-App',
-      theme: ThemeData(
-        brightness: Brightness.light,
-        primarySwatch: Colors.red,
-      ),
+      theme: ThemeData(brightness: Brightness.light, primarySwatch: Colors.red),
       darkTheme: ThemeData(
         brightness: Brightness.dark,
         primarySwatch: Colors.red,
