@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_moviles/Widgets/home.dart';
 import 'package:proyecto_moviles/Widgets/loginScreen.dart';
+import 'package:proyecto_moviles/Screens/settingsScreen.dart';
 import 'package:camera/camera.dart';
 
 late List<CameraDescription> cameras;
@@ -23,11 +24,9 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   ThemeMode _themeMode = ThemeMode.light;
 
-  void _toggleTheme() {
+  void _setThemeMode(ThemeMode mode) {
     setState(() {
-      _themeMode = _themeMode == ThemeMode.light
-          ? ThemeMode.dark
-          : ThemeMode.light;
+      _themeMode = mode;
     });
   }
 
@@ -35,7 +34,10 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Poke-App',
-      theme: ThemeData(brightness: Brightness.light, primarySwatch: Colors.red),
+      theme: ThemeData(
+        brightness: Brightness.light,
+        primarySwatch: Colors.red,
+      ),
       darkTheme: ThemeData(
         brightness: Brightness.dark,
         primarySwatch: Colors.red,
@@ -53,9 +55,7 @@ class _MyAppState extends State<MyApp> {
                     context: context,
                     isScrollControlled: true,
                     shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(16),
-                      ),
+                      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
                     ),
                     builder: (ctx) => const Padding(
                       padding: EdgeInsets.only(top: 8),
@@ -65,14 +65,21 @@ class _MyAppState extends State<MyApp> {
                 },
               ),
             ),
-            IconButton(
-              icon: Icon(
-                _themeMode == ThemeMode.dark
-                    ? Icons.dark_mode
-                    : Icons.light_mode,
+            Builder(
+              builder: (context) => IconButton(
+                icon: const Icon(Icons.settings),
+                tooltip: 'Settings',
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) => SettingsScreen(
+                        themeMode: _themeMode,
+                        onThemeChanged: _setThemeMode,
+                      ),
+                    ),
+                  );
+                },
               ),
-              onPressed: _toggleTheme,
-              tooltip: 'Toggle Dark Mode',
             ),
           ],
         ),
