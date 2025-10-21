@@ -141,7 +141,23 @@ class PokemonDataScreen extends StatelessWidget {
               ),
             ],
           ),
-          const Text('Grovyle', style: TextStyle(fontSize: 24)),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Groovyle', style: TextStyle(fontSize: 24)),
+              ElevatedButton(
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Feature not available'),
+                      duration: Duration(seconds: 2),
+                    ),
+                  );
+                },
+                child: const Text('Play Sound'),
+              ),
+            ],
+          ),
           const SizedBox(height: 8),
           Row(
             children: [
