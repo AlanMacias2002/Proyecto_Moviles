@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_moviles/Widgets/home.dart';
-import 'package:proyecto_moviles/Widgets/loginScreen.dart';
 import 'package:proyecto_moviles/Screens/settingsScreen.dart';
 import 'package:camera/camera.dart';
+
+import 'package:proyecto_moviles/Widgets/auth_gate.dart';
+import 'package:proyecto_moviles/firebase_options.dart';
+import 'package:firebase_core/firebase_core.dart';
+
 
 late List<CameraDescription> cameras;
 
@@ -12,7 +16,13 @@ late List<CameraDescription> cameras;
 //   runApp(const MyApp());
 // }
 
-void main() => runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  runApp(const MyApp());
+}
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -51,17 +61,7 @@ class _MyAppState extends State<MyApp> {
               builder: (context) => IconButton(
                 icon: const Icon(Icons.person),
                 onPressed: () {
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
-                    ),
-                    builder: (ctx) => const Padding(
-                      padding: EdgeInsets.only(top: 8),
-                      child: LoginScreen(),
-                    ),
-                  );
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const AuthGate()));
                 },
               ),
             ),
@@ -70,7 +70,7 @@ class _MyAppState extends State<MyApp> {
                 icon: const Icon(Icons.settings),
                 tooltip: 'Settings',
                 onPressed: () {
-                  Navigator.of(context).push(
+                  Navigator.push(context,
                     MaterialPageRoute(
                       builder: (context) => SettingsScreen(
                         themeMode: _themeMode,

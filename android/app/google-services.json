@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "670602954347",
+    "project_id": "proyecto-moviles-umas",
+    "storage_bucket": "proyecto-moviles-umas.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:670602954347:android:2ee4086b3d3dfb4ca6d32e",
+        "android_client_info": {
+          "package_name": "com.example.proyecto_moviles"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "670602954347-ukpc4rd8apomtml1fo8qqt9kn125laii.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDsp8ecBTgwCTVg9izUHJScELeT8S7L_7I"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "670602954347-ukpc4rd8apomtml1fo8qqt9kn125laii.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
