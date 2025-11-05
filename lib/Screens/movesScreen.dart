@@ -1,170 +1,191 @@
 import 'package:flutter/material.dart';
+import 'package:proyecto_moviles/Services/pokeapi-service.dart';
 
-class MovesScreen extends StatelessWidget {
+class MovesScreen extends StatefulWidget {
   const MovesScreen({super.key});
 
   @override
+  State<MovesScreen> createState() => _MovesScreenState();
+}
+
+class _MovesScreenState extends State<MovesScreen> {
+  final pokeApi = PokeApiService();
+  List<Map<String, dynamic>> moves = [];
+  bool loading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    loadMoves();
+  }
+
+  Future<void> loadMoves() async {
+    try {
+      final data = await pokeApi.getAllMoves();
+      setState(() {
+        // aseguramos el tipo correcto por si acaso
+        moves = List<Map<String, dynamic>>.from(data);
+        loading = false;
+      });
+    } catch (e) {
+      // opcional: maneja error bonito
+      setState(() => loading = false);
+      debugPrint('Error cargando moves: $e');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    if (loading) {
+      return Scaffold(
+        appBar: AppBar(title: const Text('Moves')),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(title: const Text('Moves')),
       body: Padding(
-        padding: EdgeInsetsGeometry.all(10),
-        child: GridView.count(
-          crossAxisCount: 1,
-          childAspectRatio: 5 / 1,
-          crossAxisSpacing: 20,
-          mainAxisSpacing: 20,
-          children: [
-            ListTile(
-              title: const Text(
-                "Absorb",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    "Drains half the damage inflicted to heal the user",
-                  ),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      const Text("20  •  100"),
-                      const SizedBox(width: 8),
-                      Chip(
-                        label: const Text(
-                          "GRASS",
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        backgroundColor: Colors.green[600],
-                        visualDensity: VisualDensity.compact,
-                      ),
-                      const SizedBox(width: 4),
-                      Chip(
-                        label: const Text(
-                          "SPECIAL",
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        backgroundColor: Colors.blue[600],
-                        visualDensity: VisualDensity.compact,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-            ListTile(
-              title: const Text(
-                "Flamethrower",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text("May burn the target"),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      const Text("90  •  100"),
-                      const SizedBox(width: 8),
-                      Chip(
-                        label: const Text(
-                          "FIRE",
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        backgroundColor: Colors.red[600],
-                        visualDensity: VisualDensity.compact,
-                      ),
-                      const SizedBox(width: 4),
-                      Chip(
-                        label: const Text(
-                          "SPECIAL",
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        backgroundColor: Colors.blue[600],
-                        visualDensity: VisualDensity.compact,
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+        padding: const EdgeInsets.all(12),
+        child: ListView.separated(
+          itemCount: moves.length,
+          separatorBuilder: (_, __) =>
+              const SizedBox(height: 14), // espacio entre items
+          itemBuilder: (context, index) {
+            final move = moves[index];
 
-            ListTile(
-              title: const Text(
-                "Earthquake",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text("Hits all adjacent Pokémon"),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      const Text("100  •  100"),
-                      const SizedBox(width: 8),
-                      Chip(
-                        label: const Text(
-                          "GROUND",
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        backgroundColor: Colors.brown[600],
-                        visualDensity: VisualDensity.compact,
-                      ),
-                      const SizedBox(width: 4),
-                      Chip(
-                        label: const Text(
-                          "PHYSICAL",
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        backgroundColor: Colors.orange[600],
-                        visualDensity: VisualDensity.compact,
-                      ),
-                    ],
+            return Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).cardColor,
+                borderRadius: BorderRadius.circular(10),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 4,
+                    offset: Offset(0, 2),
                   ),
                 ],
               ),
-            ),
-            ListTile(
-              title: const Text(
-                "Thunder Wave",
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text("Paralyzes the target"),
-                  const SizedBox(height: 4),
-                  Row(
-                    children: [
-                      const Text("—  •  90"),
-                      const SizedBox(width: 8),
-                      Chip(
-                        label: const Text(
-                          "ELECTRIC",
-                          style: TextStyle(color: Colors.white),
+              child: ListTile(
+                contentPadding: const EdgeInsets.symmetric(
+                  vertical: 14,
+                  horizontal: 12,
+                ),
+                title: Text(
+                  move["name"]?.toString().toUpperCase() ?? '',
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                subtitle: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // descripción: puede ocupar 1 o 2+ líneas. permitimos wrap.
+                    const SizedBox(height: 4),
+                    Text(
+                      move["short_effect"]?.toString() ?? '—',
+                      softWrap: true,
+                      maxLines: 3,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(color: Colors.grey[700]),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        // power • accuracy
+                        Text(
+                          "${move["power"]?.toString() ?? '—'}  •  ${move["accuracy"]?.toString() ?? '—'}",
+                          style: const TextStyle(fontWeight: FontWeight.w600),
                         ),
-                        backgroundColor: Colors.yellow[700],
-                        visualDensity: VisualDensity.compact,
-                      ),
-                      const SizedBox(width: 4),
-                      Chip(
-                        label: const Text(
-                          "STATUS",
-                          style: TextStyle(color: Colors.white),
+                        const SizedBox(width: 12),
+                        // type chip
+                        Chip(
+                          label: Text(
+                            move["type"]?.toString().toUpperCase() ?? '—',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          backgroundColor: _typeColor(move["type"]?.toString()),
+                          visualDensity: VisualDensity.compact,
                         ),
-                        backgroundColor: Colors.grey[700],
-                        visualDensity: VisualDensity.compact,
-                      ),
-                    ],
-                  ),
-                ],
+                        const SizedBox(width: 8),
+                        // damage class chip
+                        Chip(
+                          label: Text(
+                            move["damage_class"]?.toString().toUpperCase() ??
+                                '—',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          backgroundColor: _damageClassColor(
+                            move["damage_class"]?.toString(),
+                          ),
+                          visualDensity: VisualDensity.compact,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                onTap: () {
+                  // aquí puedes navegar a detail (getMoveDetail)
+                },
               ),
-            ),
-          ],
+            );
+          },
         ),
       ),
     );
+  }
+
+  // helper simple para color por tipo (puedes extender)
+  Color? _typeColor(String? type) {
+    if (type == null) return Colors.grey[700];
+    switch (type.toLowerCase()) {
+      case 'fire':
+        return Colors.red[600];
+      case 'water':
+        return Colors.blue[600];
+      case 'grass':
+        return Colors.green[600];
+      case 'electric':
+        return Colors.yellow[800];
+      case 'ground':
+        return Colors.brown[600];
+      case 'psychic':
+        return Colors.purple[600];
+      case 'ice':
+        return Colors.cyan[400];
+      case 'dragon':
+        return Colors.indigo[700];
+      case 'dark':
+        return Colors.black87;
+      case 'fairy':
+        return Colors.pink[300];
+      case 'fighting':
+        return Colors.orange[700];
+      case 'rock':
+        return Colors.brown;
+      case 'ghost':
+        return Colors.indigo[900];
+      default:
+        return Colors.grey[700];
+    }
+  }
+
+  // helper para color según damage class
+  Color? _damageClassColor(String? cls) {
+    if (cls == null) return Colors.blue[700];
+    switch (cls.toLowerCase()) {
+      case 'physical':
+        return Colors.orange[700];
+      case 'special':
+        return Colors.blue[700];
+      case 'status':
+        return Colors.grey[600];
+      default:
+        return Colors.blue[700];
+    }
   }
 }

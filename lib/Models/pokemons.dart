@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 
 enum PokemonType {
@@ -26,7 +25,7 @@ class Pokemon {
   const Pokemon({
     required this.id,
     required this.name,
-    required this.types, 
+    required this.types,
     required this.imageUrl,
   });
 
@@ -35,35 +34,31 @@ class Pokemon {
   final List<PokemonType> types;
   final String imageUrl;
 
-
   Color get primaryColor => pokemonTypeColor(types.first);
 
-
   Color get secondaryColor =>
-    types.length > 1 ? pokemonTypeColor(types[1]) : primaryColor;
-
+      types.length > 1 ? pokemonTypeColor(types[1]) : primaryColor;
 
   List<Color> get typeColors =>
-    types.map((t) => pokemonTypeColor(t)).toList(growable: false);
-
+      types.map((t) => pokemonTypeColor(t)).toList(growable: false);
 
   LinearGradient get typeGradient => typeColors.length == 1
-    ? LinearGradient(colors: [primaryColor, primaryColor.withOpacity(0.8)])
-    : LinearGradient(colors: typeColors);
+      ? LinearGradient(colors: [primaryColor, primaryColor.withOpacity(0.8)])
+      : LinearGradient(colors: typeColors);
 
   factory Pokemon.fromJson(Map<String, dynamic> json) => Pokemon(
-        id: json['id'] as int,
-        name: json['name'] as String,
-        types: _parseTypes(json),
-        imageUrl: json['imageUrl'] as String,
-      );
+    id: json['id'] as int,
+    name: json['name'] as String,
+    types: _parseTypes(json),
+    imageUrl: json['imageUrl'] as String,
+  );
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'name': name,
-        'types': types.map((t) => t.name).toList(),
-        'imageUrl': imageUrl,
-      };
+    'id': id,
+    'name': name,
+    'types': types.map((t) => t.name).toList(),
+    'imageUrl': imageUrl,
+  };
 }
 
 PokemonType _typeFromString(String value) {
@@ -81,7 +76,9 @@ List<PokemonType> _parseTypes(Map<String, dynamic> json) {
         .map(_typeFromString)
         .toList();
     if (list.isEmpty || list.length > 2) {
-      throw ArgumentError('A Pokémon must have 1 or 2 types. Got: ${list.length}');
+      throw ArgumentError(
+        'A Pokémon must have 1 or 2 types. Got: ${list.length}',
+      );
     }
     return list;
   }
@@ -131,4 +128,3 @@ Color pokemonTypeColor(PokemonType type) {
       return Colors.pink[300]!;
   }
 }
-
