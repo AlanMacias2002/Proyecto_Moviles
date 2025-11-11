@@ -53,6 +53,9 @@ class PokeApiService {
       "image": data["sprites"]["other"]["official-artwork"]["front_default"],
       "abilities": data["abilities"].map((a) => a["ability"]["name"]).toList(),
       "description": flavor["flavor_text"],
+      "stats": data["stats"],
+      "species": data["species"],
+      "encounters": data["location_area_encounters"],
       "audio": null, // pokeapi no trae cries en audio directamente
     };
   }

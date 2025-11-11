@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:proyecto_moviles/Services/pokeapi-service.dart';
 
 class MovesScreen extends StatefulWidget {
-  const MovesScreen({super.key});
+  final Map<String, dynamic>? pokemon;
+
+  const MovesScreen({super.key, this.pokemon});
 
   @override
   State<MovesScreen> createState() => _MovesScreenState();
@@ -21,14 +23,20 @@ class _MovesScreenState extends State<MovesScreen> {
 
   Future<void> loadMoves() async {
     try {
-      final data = await pokeApi.getAllMoves();
+      List<Map<String, dynamic>> data = [];
+
+      if (widget.pokemon != null) {
+        final nameOrId = widget.pokemon!['name'] ?? widget.pokemon!['id'].toString();
+        data = await pokeApi.getPokemonMoves(nameOrId);
+      } else {
+        data = await pokeApi.getAllMoves();
+      }
+
       setState(() {
-        // aseguramos el tipo correcto por si acaso
         moves = List<Map<String, dynamic>>.from(data);
         loading = false;
       });
     } catch (e) {
-      // opcional: maneja error bonito
       setState(() => loading = false);
       debugPrint('Error cargando moves: $e');
     }

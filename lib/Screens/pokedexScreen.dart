@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_moviles/Services/pokeapi-service.dart'; // importa el servicio de arriba
+import 'package:proyecto_moviles/Widgets/pokemon.dart';
 
 class PokedexScreen extends StatelessWidget {
   const PokedexScreen({super.key});
@@ -84,8 +85,15 @@ class PokedexScreen extends StatelessWidget {
                           "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${p['id']}.png";
 
                       return InkWell(
-                        onTap: () {
+                        onTap: () async {
                           // Aquí podrías navegar a detalle
+                        final pokemonDetails = await pokemonService.getPokemonDetail(p['url']);
+
+                          Navigator.push(context,
+                            MaterialPageRoute(
+                              builder: (context) => PokemonWidget(pokemon: pokemonDetails),
+                            ),
+                          );
                         },
                         child: Column(
                           children: [
