@@ -175,50 +175,31 @@ class PokeApiService {
     }
   }
 
-  Future<List<Map<String, String>>> getAllAbilities() async {
-    try {
-      final resp = await http.get(Uri.parse("$baseUrl/ability?limit=2000"));
-      if (resp.statusCode != 200) return [];
+  Future<List<Map<String, dynamic>>> getAbilityList() async {
+    const url = "https://pokeapi.co/api/v2/ability?limit=50";
+    final resp = await http.get(Uri.parse(url));
+    if (resp.statusCode != 200) throw Exception("Error loading abilities");
 
-      final data = jsonDecode(resp.body);
-      final results = (data["results"] as List).cast<Map<String, dynamic>>();
+    final data = jsonDecode(resp.body);
+    final List results = data["results"];
+    return results.map((a) => {"name": a["name"], "url": a["url"]}).toList();
+  }
 
-      // Hacer las llamadas a cada habilidad en paralelo
-      final futures = results.map((ab) async {
-        try {
-          final abResp = await http.get(Uri.parse(ab["url"] as String));
-          if (abResp.statusCode != 200) return null;
+  Future<Map<String, dynamic>> getAbilityDetail(String url) async {
+    final resp = await http.get(Uri.parse(url));
+    if (resp.statusCode != 200) throw Exception("Error loading ability detail");
 
-          final abData = jsonDecode(abResp.body) as Map<String, dynamic>;
-          final effectEntries =
-              (abData["effect_entries"] as List?)
-                  ?.cast<Map<String, dynamic>>() ??
-              [];
+    final detailData = jsonDecode(resp.body);
+    final effectEntries = detailData["effect_entries"] as List;
+    final englishEntry = effectEntries.firstWhere(
+      (entry) => entry["language"]["name"] == "en",
+      orElse: () => {"short_effect": "No description available"},
+    );
 
-          // Buscar la descripción en inglés
-          final enEntry = effectEntries.firstWhere(
-            (e) => e["language"]["name"] == "en",
-            orElse: () => {"short_effect": "No description available"},
-          );
-
-          return {
-            "name": ab["name"] as String? ?? "Unknown",
-            "short_effect":
-                enEntry["short_effect"] as String? ??
-                "No description available",
-          };
-        } catch (_) {
-          return null;
-        }
-      }).toList();
-
-      final abilities = await Future.wait(futures);
-
-      // Filtrar nulls
-      return abilities.whereType<Map<String, String>>().toList();
-    } catch (e) {
-      print("Error getAllAbilities: $e");
-      return [];
-    }
+    return {
+      "name": detailData["name"],
+      "short_effect": englishEntry["short_effect"],
+      "pokemon": detailData["pokemon"],
+    };
   }
 }

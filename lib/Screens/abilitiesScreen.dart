@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_moviles/Services/pokeapi-service.dart';
+import 'abilityDetailScreen.dart';
 
 class AbilitiesScreen extends StatefulWidget {
   const AbilitiesScreen({super.key});
@@ -9,85 +10,70 @@ class AbilitiesScreen extends StatefulWidget {
 }
 
 class _AbilitiesScreenState extends State<AbilitiesScreen> {
-  final pokeApi = PokeApiService();
-  List<Map<String, dynamic>> abilities = [];
-  bool loading = true;
+  final PokeApiService api = PokeApiService();
+  late Future<List<Map<String, dynamic>>> futureList;
 
   @override
   void initState() {
     super.initState();
-    loadAbilities();
-  }
-
-  Future<void> loadAbilities() async {
-    try {
-      final data = await pokeApi.getAllAbilities();
-      setState(() {
-        // aseguramos el tipo correcto
-        abilities = List<Map<String, dynamic>>.from(data);
-        loading = false;
-      });
-    } catch (e) {
-      setState(() => loading = false);
-      debugPrint('Error cargando abilities: $e');
-    }
+    futureList = api.getAbilityList();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (loading) {
-      return Scaffold(
-        appBar: AppBar(title: const Text('Abilities')),
-        body: const Center(child: CircularProgressIndicator()),
-      );
-    }
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Abilities')),
-      body: Padding(
-        padding: const EdgeInsets.all(12),
-        child: ListView.separated(
-          itemCount: abilities.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 14),
-          itemBuilder: (context, index) {
-            final ability = abilities[index];
+      appBar: AppBar(
+        title: const Text("Abilities"),
+        backgroundColor: isDark ? Colors.grey[900] : Colors.grey[200],
+        foregroundColor: isDark ? Colors.white : Colors.black,
+      ),
+      body: FutureBuilder<List<Map<String, dynamic>>>(
+        future: futureList,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          if (snapshot.hasError) {
+            return Center(child: Text("Error: ${snapshot.error}"));
+          }
+          final abilities = snapshot.data ?? [];
+          if (abilities.isEmpty) {
+            return const Center(child: Text("No abilities found"));
+          }
 
-            return Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: const [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 4,
-                    offset: Offset(0, 2),
-                  ),
-                ],
-              ),
-              child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 14,
-                  horizontal: 12,
-                ),
+          return ListView.separated(
+            itemCount: abilities.length,
+            separatorBuilder: (_, __) =>
+                Divider(color: isDark ? Colors.white24 : Colors.grey.shade300),
+            itemBuilder: (context, index) {
+              final ability = abilities[index];
+              return ListTile(
                 title: Text(
-                  ability["name"]?.toString().toUpperCase() ?? '',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                subtitle: Padding(
-                  padding: const EdgeInsets.only(top: 6),
-                  child: Text(
-                    ability["short_effect"]?.toString() ?? '—',
-                    softWrap: true,
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
-                    style: TextStyle(color: Colors.grey[700]),
+                  ability["name"].toString().toUpperCase(),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? Colors.white : Colors.black87,
                   ),
                 ),
-                onTap: null, // sin acción extra
-              ),
-            );
-          },
-        ),
+                trailing: const Icon(Icons.chevron_right),
+                onTap: () async {
+                  // carga el detalle solo cuando el usuario toca
+                  final detail = await api.getAbilityDetail(ability["url"]);
+                  if (!context.mounted) return;
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          AbilityDetailScreen(ability: detail),
+                    ),
+                  );
+                },
+              );
+            },
+          );
+        },
       ),
     );
   }

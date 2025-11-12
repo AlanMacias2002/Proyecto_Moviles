@@ -5,7 +5,7 @@ import 'package:camera/camera.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class PokemonDataScreen extends StatelessWidget {
-    final Map<String, dynamic> pokemon;
+  final Map<String, dynamic> pokemon;
 
   const PokemonDataScreen({super.key, required this.pokemon});
 
@@ -83,9 +83,9 @@ class PokemonDataScreen extends StatelessWidget {
 
     return false;
   }
-@override
+
+  @override
   Widget build(BuildContext context) {
-    
     final id = pokemon['id'];
     final name = _capitalize(pokemon['name']);
     final types = List<String>.from(pokemon['types'] ?? []);
@@ -93,7 +93,7 @@ class PokemonDataScreen extends StatelessWidget {
     final description = pokemon['description'] ?? 'No description available.';
     final imageUrl = pokemon['image'] ?? '';
     final stats = List<Map<String, dynamic>>.from(pokemon['stats'] ?? []);
-    
+
     return Scaffold(
       appBar: AppBar(title: Text(name)),
       body: ListView(
@@ -104,7 +104,8 @@ class PokemonDataScreen extends StatelessWidget {
               imageUrl,
               height: 200,
               fit: BoxFit.contain,
-              errorBuilder: (context, error, stackTrace) => const Icon(Icons.error),
+              errorBuilder: (context, error, stackTrace) =>
+                  const Icon(Icons.error),
             ),
           ),
           const SizedBox(height: 16),
@@ -116,14 +117,14 @@ class PokemonDataScreen extends StatelessWidget {
               final normalizedType = type.toString().toLowerCase();
               return Image.asset(
                 _getTypeIcon(normalizedType),
-                width: 120,
-                height: 60,
-                errorBuilder: (context, error, stackTrace) => const Icon(Icons.error),
+                width: 90,
+                errorBuilder: (context, error, stackTrace) =>
+                    const Icon(Icons.error),
               );
             }).toList(),
           ),
 
-          const SizedBox(height: 16),
+          const SizedBox(height: 10),
           Row(
             children: [
               ElevatedButton(
@@ -140,20 +141,24 @@ class PokemonDataScreen extends StatelessWidget {
                   if (cameras.isNotEmpty) {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => ARScreen(camera: cameras.first)),
+                      MaterialPageRoute(
+                        builder: (context) => ARScreen(camera: cameras.first),
+                      ),
                     );
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('No camera available on this device')),
+                      const SnackBar(
+                        content: Text('No camera available on this device'),
+                      ),
                     );
                   }
                 },
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: const [
-                    Icon(Icons.camera_alt),
+                    Icon(Icons.view_in_ar),
                     SizedBox(width: 8),
-                    Text('Launch AR Pokémon'),
+                    Text('View in AR'),
                   ],
                 ),
               ),
@@ -182,7 +187,9 @@ class PokemonDataScreen extends StatelessWidget {
           const Text('Abilities', style: TextStyle(fontSize: 20)),
           Wrap(
             spacing: 8,
-            children: abilities.map((a) => Chip(label: Text(_capitalize(a)))).toList(),
+            children: abilities
+                .map((a) => Chip(label: Text(_capitalize(a))))
+                .toList(),
           ),
           const SizedBox(height: 16),
           const Text('Stats', style: TextStyle(fontSize: 20)),
@@ -193,7 +200,7 @@ class PokemonDataScreen extends StatelessWidget {
               final baseStat = statEntry['base_stat'];
               return Text('${_capitalize(statName)}: $baseStat');
             }).toList(),
-          )
+          ),
         ],
       ),
     );
