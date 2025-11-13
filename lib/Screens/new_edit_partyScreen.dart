@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:proyecto_moviles/Models/party_model.dart';
 import 'package:proyecto_moviles/Models/pokemons.dart';
 import 'package:proyecto_moviles/Screens/shareQrScreen.dart';
+import 'package:proyecto_moviles/Screens/select_pokemon_screen.dart';
 
 class NewEditPartyScreen extends StatefulWidget {
 	const NewEditPartyScreen({super.key, this.party});
@@ -17,6 +18,23 @@ class _NewEditPartyScreenState extends State<NewEditPartyScreen> {
 	late BattleFormat _format;
 	late TeamStyle _style;
 	late final List<Pokemon> _members;
+
+	Future<void> _pickPokemon(int slotIndex) async {
+		final selected = await Navigator.of(context).push<Pokemon>(
+			MaterialPageRoute(
+				builder: (_) => const SelectPokemonScreen(),
+			),
+		);
+		if (selected != null) {
+			setState(() {
+				if (slotIndex < _members.length) {
+					_members[slotIndex] = selected; // reemplaza
+				} else if (_members.length < 6) {
+					_members.add(selected); // agrega nuevo
+				}
+			});
+		}
+	}
 
 	@override
 	void initState() {
@@ -126,45 +144,45 @@ class _NewEditPartyScreenState extends State<NewEditPartyScreen> {
 						const Text('Miembros (máx. 6)'),
 						const SizedBox(height: 8),
 									Wrap(
-							spacing: 8,
-							runSpacing: 8,
-							children: List.generate(6, (i) {
-											if (i < _members.length) {
-												final p = _members[i];
-												return GestureDetector(
-													onTap: () => _snack('funcion agregar o editar pokemon'),
-													child: ClipRRect(
-														borderRadius: BorderRadius.circular(10),
-														child: Image.network(
-															p.imageUrl,
-															width: 64,
-															height: 64,
-															fit: BoxFit.cover,
-															errorBuilder: (context, error, stack) => Container(
+									spacing: 8,
+									runSpacing: 8,
+									children: List.generate(6, (i) {
+												if (i < _members.length) {
+													final p = _members[i];
+													return GestureDetector(
+														onTap: () => _pickPokemon(i),
+														child: ClipRRect(
+															borderRadius: BorderRadius.circular(10),
+															child: Image.network(
+																p.imageUrl,
 																width: 64,
 																height: 64,
-																color: Colors.black12,
-																alignment: Alignment.center,
-																child: const Icon(Icons.error, color: Colors.redAccent),
+																fit: BoxFit.cover,
+																errorBuilder: (context, error, stack) => Container(
+																	width: 64,
+																	height: 64,
+																	color: Colors.black12,
+																	alignment: Alignment.center,
+																	child: const Icon(Icons.error, color: Colors.redAccent),
+																),
 															),
 														),
-													),
-												);
-											} else {
-												return GestureDetector(
-													onTap: () => _snack('funcion agregar o editar pokemon'),
-													child: Container(
-														width: 64,
-														height: 64,
-														decoration: BoxDecoration(
-															borderRadius: BorderRadius.circular(10),
-															border: Border.all(color: Colors.black26),
-															color: Colors.white,
+													);
+												} else {
+													return GestureDetector(
+														onTap: () => _pickPokemon(i),
+														child: Container(
+															width: 64,
+															height: 64,
+															decoration: BoxDecoration(
+																borderRadius: BorderRadius.circular(10),
+																border: Border.all(color: Colors.black26),
+																color: Colors.white,
+															),
+															child: const Icon(Icons.add, color: Colors.black38),
 														),
-														child: const Icon(Icons.add, color: Colors.black38),
-													),
-												);
-											}
+													);
+												}
 							}),
 						),
 					],

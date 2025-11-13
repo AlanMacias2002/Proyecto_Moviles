@@ -33,6 +33,38 @@ class PokeApiService {
     }
   }
 
+  // Obtiene sólo los tipos de un Pokémon (más liviano que traer todo el detalle)
+  Future<List<String>> getPokemonTypesByUrl(String url) async {
+    try {
+      final resp = await http.get(Uri.parse(url));
+      if (resp.statusCode != 200) return [];
+      final data = jsonDecode(resp.body);
+      final List types = data["types"] as List? ?? [];
+      return types.map((t) => t["type"]["name"] as String).toList();
+    } catch (e) {
+      return [];
+    }
+  }
+
+  // Obtiene el conjunto de IDs de Pokémon que pertenecen a un tipo dado
+  // usando el endpoint /type/{type} (mucho más eficiente para filtrar por tipo)
+  Future<Set<int>> getPokemonIdsByType(String typeSlug) async {
+    try {
+      final resp = await http.get(Uri.parse("$baseUrl/type/$typeSlug"));
+      if (resp.statusCode != 200) return <int>{};
+      final data = jsonDecode(resp.body);
+      final List list = data["pokemon"] as List? ?? [];
+      final ids = list.map<int>((entry) {
+        final url = entry["pokemon"]["url"] as String;
+        // extraer el ID de la URL
+        return int.parse(url.split('/').where((s) => s.isNotEmpty).last);
+      }).toSet();
+      return ids;
+    } catch (_) {
+      return <int>{};
+    }
+  }
+
   Future<Map<String, dynamic>> getPokemonDetail(String url) async {
     final resp = await http.get(Uri.parse(url));
     final data = jsonDecode(resp.body);
