@@ -17,7 +17,10 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      return web;
+      throw UnsupportedError(
+        'DefaultFirebaseOptions have not been configured for web - '
+        'you can reconfigure this by running the FlutterFire CLI again.',
+      );
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -46,30 +49,20 @@ class DefaultFirebaseOptions {
     }
   }
 
-  static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCeTyv2MLss2VWSBttQhHL9SGBHt2RUN1c',
-    appId: '1:670602954347:web:387a42dcc10b888ba6d32e',
-    messagingSenderId: '670602954347',
-    projectId: 'proyecto-moviles-umas',
-    authDomain: 'proyecto-moviles-umas.firebaseapp.com',
-    storageBucket: 'proyecto-moviles-umas.firebasestorage.app',
-  );
-
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyDsp8ecBTgwCTVg9izUHJScELeT8S7L_7I',
-    appId: '1:670602954347:android:2ee4086b3d3dfb4ca6d32e',
-    messagingSenderId: '670602954347',
-    projectId: 'proyecto-moviles-umas',
-    storageBucket: 'proyecto-moviles-umas.firebasestorage.app',
+    apiKey: 'AIzaSyBE9qTPB26JJ2R_WaalgJ33Gf70bmgTGJo',
+    appId: '1:896090909348:android:939fa6a2a07757d442d431',
+    messagingSenderId: '896090909348',
+    projectId: 'proyecto-moviles-f9b68',
+    storageBucket: 'proyecto-moviles-f9b68.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBHDjBHPVma4gLWWHz3HasC8YXE7jO-2m4',
-    appId: '1:670602954347:ios:fc6125b08653daeca6d32e',
-    messagingSenderId: '670602954347',
-    projectId: 'proyecto-moviles-umas',
-    storageBucket: 'proyecto-moviles-umas.firebasestorage.app',
-    iosClientId: '670602954347-2fblblhtbk8fm4krf6b3i5voftmqmril.apps.googleusercontent.com',
+    apiKey: 'AIzaSyCLPJbAlihd1YnZOlzmxm_xOdVc_brzlYM',
+    appId: '1:896090909348:ios:54f4aaa8aea469f042d431',
+    messagingSenderId: '896090909348',
+    projectId: 'proyecto-moviles-f9b68',
+    storageBucket: 'proyecto-moviles-f9b68.firebasestorage.app',
     iosBundleId: 'com.example.proyectoMoviles',
   );
 }

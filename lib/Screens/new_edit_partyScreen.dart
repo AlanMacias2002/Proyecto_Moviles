@@ -3,21 +3,26 @@ import 'package:proyecto_moviles/Models/party_model.dart';
 import 'package:proyecto_moviles/Models/pokemons.dart';
 import 'package:proyecto_moviles/Screens/shareQrScreen.dart';
 import 'package:proyecto_moviles/Screens/select_pokemon_screen.dart';
+import 'package:proyecto_moviles/Services/party_repository.dart';
 
 class NewEditPartyScreen extends StatefulWidget {
-	const NewEditPartyScreen({super.key, this.party});
+	const NewEditPartyScreen({super.key, this.party, this.partyId});
 
 	final Party? party; // null = nueva, !null = editar
+	final String? partyId; // id del documento en Firestore
 
 	@override
 	State<NewEditPartyScreen> createState() => _NewEditPartyScreenState();
 }
 
 class _NewEditPartyScreenState extends State<NewEditPartyScreen> {
+	final _repo = PartyRepository();
 	late final TextEditingController _nameCtrl;
 	late BattleFormat _format;
 	late TeamStyle _style;
 	late final List<Pokemon> _members;
+	bool _saving = false;
+	bool _deleting = false;
 
 	Future<void> _pickPokemon(int slotIndex) async {
 		final selected = await Navigator.of(context).push<Pokemon>(
@@ -55,6 +60,74 @@ class _NewEditPartyScreenState extends State<NewEditPartyScreen> {
 		ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
 	}
 
+	Future<void> _save() async {
+		if (_saving) return;
+		if (_nameCtrl.text.trim().isEmpty) {
+			_snack('Pon un nombre al equipo');
+			return;
+		}
+		final party = Party(
+			name: _nameCtrl.text.trim(),
+			format: _format,
+			style: _style,
+			members: _members,
+		);
+		setState(() => _saving = true);
+		try {
+			if (widget.partyId == null) {
+				await _repo.createParty(party);
+				_snack('Equipo creado');
+			} else {
+				await _repo.updateParty(widget.partyId!, party);
+				_snack('Cambios guardados');
+			}
+			if (mounted) Navigator.pop(context);
+		} catch (e) {
+			_snack('Error al guardar: $e');
+		} finally {
+			if (mounted) setState(() => _saving = false);
+		}
+	}
+
+	Future<void> _delete() async {
+		if (_deleting) return;
+		final id = widget.partyId;
+		if (id == null) return;
+		final confirm = await showDialog<bool>(
+					context: context,
+					builder: (ctx) => AlertDialog(
+						title: const Text('Eliminar equipo'),
+						content: const Text('¿Seguro que quieres eliminar este equipo?'),
+						actions: [
+							TextButton(
+								onPressed: () => Navigator.pop(ctx, false),
+								child: const Text('Cancelar'),
+							),
+							TextButton(
+								onPressed: () => Navigator.pop(ctx, true),
+								child: const Text('Eliminar'),
+							),
+						],
+					),
+				) ??
+				false;
+		if (!confirm) return;
+		setState(() => _deleting = true);
+		try {
+			await _repo.deleteParty(id);
+			if (mounted) {
+				Navigator.pop(context);
+				ScaffoldMessenger.of(context).showSnackBar(
+					const SnackBar(content: Text('Equipo eliminado')),
+				);
+			}
+		} catch (e) {
+			_snack('Error al eliminar: $e');
+		} finally {
+			if (mounted) setState(() => _deleting = false);
+		}
+	}
+
 	@override
 	Widget build(BuildContext context) {
 		final isEdit = widget.party != null;
@@ -62,18 +135,24 @@ class _NewEditPartyScreenState extends State<NewEditPartyScreen> {
 			appBar: AppBar(
 				title: Text(isEdit ? 'Editar equipo' : 'Nuevo equipo'),
 				actions: [
-									if (isEdit)
-										IconButton(
-											icon: const Icon(Icons.qr_code_2),
-											tooltip: 'QR',
-											onPressed: () {
-												Navigator.of(context).push(
-													MaterialPageRoute(
-														builder: (_) => ShareQrScreen(),
-													),
-												);
-											},
-										),
+							if (widget.partyId != null)
+								IconButton(
+									icon: const Icon(Icons.delete_outline),
+									tooltip: 'Eliminar',
+									onPressed: _deleting ? null : _delete,
+								),
+							if (isEdit)
+								IconButton(
+									icon: const Icon(Icons.qr_code_2),
+									tooltip: 'QR',
+									onPressed: () {
+										Navigator.of(context).push(
+											MaterialPageRoute(
+												builder: (_) => ShareQrScreen(),
+											),
+										);
+									},
+								),
 					IconButton(
 						icon: const Icon(Icons.help_outline),
 						onPressed: () => _snack('funcionammiento accion'),
@@ -202,7 +281,7 @@ class _NewEditPartyScreenState extends State<NewEditPartyScreen> {
 							const SizedBox(width: 12),
 							Expanded(
 								child: ElevatedButton(
-									onPressed: () => _snack('funcion guardar / editar equipo'),
+									onPressed: _saving ? null : _save,
 									child: Text(isEdit ? 'Guardar cambios' : 'Crear equipo'),
 								),
 							),

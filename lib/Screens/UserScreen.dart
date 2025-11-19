@@ -11,6 +11,23 @@ class UserScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
+        actions: [
+          IconButton(
+            tooltip: 'Cerrar sesión',
+            icon: const Icon(Icons.logout),
+            onPressed: () async {
+              try {
+                await FirebaseAuth.instance.signOut();
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Error al cerrar sesión: $e')),
+                  );
+                }
+              }
+            },
+          ),
+        ],
       ),
       body: Center(
         child: Column(
@@ -31,6 +48,23 @@ class UserScreen extends StatelessWidget {
             Text(
               user?.email ?? 'No email',
               style: const TextStyle(fontSize: 16, color: Colors.grey),
+            ),
+            const SizedBox(height: 24),
+            ElevatedButton.icon(
+              onPressed: () async {
+                try {
+                  await FirebaseAuth.instance.signOut();
+                } catch (e) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Error al cerrar sesión: $e')),
+                    );
+                  }
+                }
+              },
+              icon: const Icon(Icons.logout),
+              label: const Text('Cerrar sesión'),
+              style: ElevatedButton.styleFrom(minimumSize: const Size(160, 44)),
             ),
           ],
         ),
