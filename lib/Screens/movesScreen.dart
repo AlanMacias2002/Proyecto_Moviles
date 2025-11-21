@@ -13,12 +13,24 @@ class MovesScreen extends StatefulWidget {
 class _MovesScreenState extends State<MovesScreen> {
   final pokeApi = PokeApiService();
   List<Map<String, dynamic>> moves = [];
+  List<Map<String, dynamic>> filteredMoves = [];
+
   bool loading = true;
+  String query = "";
+
+  final TextEditingController searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     loadMoves();
+
+    searchController.addListener(() {
+      setState(() {
+        query = searchController.text.trim().toLowerCase();
+        applySearch();
+      });
+    });
   }
 
   Future<void> loadMoves() async {
@@ -26,7 +38,8 @@ class _MovesScreenState extends State<MovesScreen> {
       List<Map<String, dynamic>> data = [];
 
       if (widget.pokemon != null) {
-        final nameOrId = widget.pokemon!['name'] ?? widget.pokemon!['id'].toString();
+        final nameOrId =
+            widget.pokemon!['name'] ?? widget.pokemon!['id'].toString();
         data = await pokeApi.getPokemonMoves(nameOrId);
       } else {
         data = await pokeApi.getAllMoves();
@@ -34,11 +47,27 @@ class _MovesScreenState extends State<MovesScreen> {
 
       setState(() {
         moves = List<Map<String, dynamic>>.from(data);
+        filteredMoves = moves;
         loading = false;
       });
     } catch (e) {
       setState(() => loading = false);
       debugPrint('Error cargando moves: $e');
+    }
+  }
+
+  void applySearch() {
+    if (query.isEmpty) {
+      filteredMoves = moves;
+    } else {
+      filteredMoves = moves.where((m) {
+        final name = m["name"]?.toString().toLowerCase() ?? "";
+        final type = m["type"]?.toString().toLowerCase() ?? "";
+        final dmg = m["damage_class"]?.toString().toLowerCase() ?? "";
+        return name.contains(query) ||
+            type.contains(query) ||
+            dmg.contains(query);
+      }).toList();
     }
   }
 
@@ -53,101 +82,141 @@ class _MovesScreenState extends State<MovesScreen> {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Moves')),
+
       body: Padding(
         padding: const EdgeInsets.all(12),
-        child: ListView.separated(
-          itemCount: moves.length,
-          separatorBuilder: (_, __) =>
-              const SizedBox(height: 14), // espacio entre items
-          itemBuilder: (context, index) {
-            final move = moves[index];
-
-            return Container(
-              decoration: BoxDecoration(
-                color: Theme.of(context).cardColor,
-                borderRadius: BorderRadius.circular(10),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black12,
-                    blurRadius: 4,
-                    offset: Offset(0, 2),
-                  ),
-                ],
+        child: Column(
+          children: [
+            // -------------------------------
+            //     🔍 SEARCHBAR
+            // -------------------------------
+            TextField(
+              controller: searchController,
+              decoration: InputDecoration(
+                hintText: "Buscar movimiento...",
+                prefixIcon: const Icon(Icons.search),
+                suffixIcon: query.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear),
+                        onPressed: () => searchController.clear(),
+                      )
+                    : null,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(14),
+                ),
+                filled: true,
+                fillColor: Theme.of(context).cardColor.withOpacity(0.9),
               ),
-              child: ListTile(
-                contentPadding: const EdgeInsets.symmetric(
-                  vertical: 14,
-                  horizontal: 12,
-                ),
-                title: Text(
-                  move["name"]?.toString().toUpperCase() ?? '',
-                  style: const TextStyle(fontWeight: FontWeight.bold),
-                ),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // descripción: puede ocupar 1 o 2+ líneas. permitimos wrap.
-                    const SizedBox(height: 4),
-                    Text(
-                      move["short_effect"]?.toString() ?? '—',
-                      softWrap: true,
-                      maxLines: 3,
-                      overflow: TextOverflow.ellipsis,
-                      style: TextStyle(color: Colors.grey[700]),
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        // power • accuracy
-                        Text(
-                          "${move["power"]?.toString() ?? '—'}  •  ${move["accuracy"]?.toString() ?? '—'}",
-                          style: const TextStyle(fontWeight: FontWeight.w600),
-                        ),
-                        const SizedBox(width: 12),
-                        // type chip
-                        Chip(
-                          label: Text(
-                            move["type"]?.toString().toUpperCase() ?? '—',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          backgroundColor: _typeColor(move["type"]?.toString()),
-                          visualDensity: VisualDensity.compact,
-                        ),
-                        const SizedBox(width: 8),
-                        // damage class chip
-                        Chip(
-                          label: Text(
-                            move["damage_class"]?.toString().toUpperCase() ??
-                                '—',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          backgroundColor: _damageClassColor(
-                            move["damage_class"]?.toString(),
-                          ),
-                          visualDensity: VisualDensity.compact,
+            ),
+
+            const SizedBox(height: 14),
+
+            // -------------------------------
+            //     LISTA DE MOVIMIENTOS
+            // -------------------------------
+            Expanded(
+              child: ListView.separated(
+                itemCount: filteredMoves.length,
+                separatorBuilder: (_, __) =>
+                    const SizedBox(height: 14), // espacio entre items
+                itemBuilder: (context, index) {
+                  final move = filteredMoves[index];
+
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).cardColor,
+                      borderRadius: BorderRadius.circular(10),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black12,
+                          blurRadius: 4,
+                          offset: Offset(0, 2),
                         ),
                       ],
                     ),
-                  ],
-                ),
-                onTap: () {
-                  // aquí puedes navegar a detail (getMoveDetail)
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                        vertical: 14,
+                        horizontal: 12,
+                      ),
+                      title: Text(
+                        move["name"]?.toString().toUpperCase() ?? '',
+                        style: const TextStyle(fontWeight: FontWeight.bold),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 4),
+                          Text(
+                            move["short_effect"]?.toString() ?? '—',
+                            softWrap: true,
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(color: Colors.grey[700]),
+                          ),
+                          const SizedBox(height: 10),
+                          Row(
+                            children: [
+                              Text(
+                                "${move["power"]?.toString() ?? '—'}  •  ${move["accuracy"]?.toString() ?? '—'}",
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+
+                              // TYPE CHIP
+                              Chip(
+                                label: Text(
+                                  move["type"]?.toString().toUpperCase() ?? '—',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                backgroundColor: _typeColor(
+                                  move["type"]?.toString(),
+                                ),
+                                visualDensity: VisualDensity.compact,
+                              ),
+
+                              const SizedBox(width: 8),
+
+                              // DAMAGE CLASS CHIP
+                              Chip(
+                                label: Text(
+                                  move["damage_class"]
+                                          ?.toString()
+                                          .toUpperCase() ??
+                                      '—',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                backgroundColor: _damageClassColor(
+                                  move["damage_class"]?.toString(),
+                                ),
+                                visualDensity: VisualDensity.compact,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      onTap: () {
+                        // Aquí puedes navegar al detalle de un movimiento
+                      },
+                    ),
+                  );
                 },
               ),
-            );
-          },
+            ),
+          ],
         ),
       ),
     );
   }
 
-  // helper simple para color por tipo (puedes extender)
   Color? _typeColor(String? type) {
     if (type == null) return Colors.grey[700];
     switch (type.toLowerCase()) {
@@ -182,7 +251,6 @@ class _MovesScreenState extends State<MovesScreen> {
     }
   }
 
-  // helper para color según damage class
   Color? _damageClassColor(String? cls) {
     if (cls == null) return Colors.blue[700];
     switch (cls.toLowerCase()) {
