@@ -1,88 +1,88 @@
 import 'package:flutter/material.dart';
 import 'package:proyecto_moviles/Screens/arScreen.dart';
 import 'package:proyecto_moviles/main.dart';
-import 'package:camera/camera.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'dart:io';
 
 class PokemonDataScreen extends StatelessWidget {
   final Map<String, dynamic> pokemon;
 
   const PokemonDataScreen({super.key, required this.pokemon});
 
-  Future<bool> _requestCameraPermission(BuildContext context) async {
-    final status = await Permission.camera.status;
-    if (status.isGranted) return true;
+  // Future<bool> _requestCameraPermission(BuildContext context) async {
+  //   final status = await Permission.camera.status;
+  //   if (status.isGranted) return true;
 
-    // If permission is permanently denied, prompt user to open app settings
-    if (status.isPermanentlyDenied) {
-      final openSettings = await showDialog<bool>(
-        context: context,
-        builder: (ctx) => AlertDialog(
-          title: const Text('Camera permission required'),
-          content: const Text(
-            'Camera access is permanently denied for this app. Please open app settings and enable the Camera permission to use AR features.',
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(false),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(ctx).pop(true),
-              child: const Text('Open settings'),
-            ),
-          ],
-        ),
-      );
+  //   // If permission is permanently denied, prompt user to open app settings
+  //   if (status.isPermanentlyDenied) {
+  //     final openSettings = await showDialog<bool>(
+  //       context: context,
+  //       builder: (ctx) => AlertDialog(
+  //         title: const Text('Camera permission required'),
+  //         content: const Text(
+  //           'Camera access is permanently denied for this app. Please open app settings and enable the Camera permission to use AR features.',
+  //         ),
+  //         actions: [
+  //           TextButton(
+  //             onPressed: () => Navigator.of(ctx).pop(false),
+  //             child: const Text('Cancel'),
+  //           ),
+  //           TextButton(
+  //             onPressed: () => Navigator.of(ctx).pop(true),
+  //             child: const Text('Open settings'),
+  //           ),
+  //         ],
+  //       ),
+  //     );
 
-      if (openSettings == true) {
-        openAppSettings();
-      }
-      return false;
-    }
+  //     if (openSettings == true) {
+  //       openAppSettings();
+  //     }
+  //     return false;
+  //   }
 
-    // Show a rationale dialog before requesting permission
-    final shouldRequest = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Camera permission'),
-        content: const Text(
-          'This feature requires access to your camera. Allow camera access?',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(false),
-            child: const Text('No'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(ctx).pop(true),
-            child: const Text('Yes'),
-          ),
-        ],
-      ),
-    );
+  //   // Show a rationale dialog before requesting permission
+  //   final shouldRequest = await showDialog<bool>(
+  //     context: context,
+  //     builder: (ctx) => AlertDialog(
+  //       title: const Text('Camera permission'),
+  //       content: const Text(
+  //         'This feature requires access to your camera. Allow camera access?',
+  //       ),
+  //       actions: [
+  //         TextButton(
+  //           onPressed: () => Navigator.of(ctx).pop(false),
+  //           child: const Text('No'),
+  //         ),
+  //         TextButton(
+  //           onPressed: () => Navigator.of(ctx).pop(true),
+  //           child: const Text('Yes'),
+  //         ),
+  //       ],
+  //     ),
+  //   );
 
-    if (shouldRequest != true) return false;
+  //   if (shouldRequest != true) return false;
 
-    final result = await Permission.camera.request();
-    if (result.isGranted) return true;
+  //   final result = await Permission.camera.request();
+  //   if (result.isGranted) return true;
 
-    if (result.isPermanentlyDenied) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Permission permanently denied. You can enable it from app settings.',
-          ),
-        ),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Camera permission denied.')),
-      );
-    }
+  //   if (result.isPermanentlyDenied) {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(
+  //         content: Text(
+  //           'Permission permanently denied. You can enable it from app settings.',
+  //         ),
+  //       ),
+  //     );
+  //   } else {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       const SnackBar(content: Text('Camera permission denied.')),
+  //     );
+  //   }
 
-    return false;
-  }
+  //   return false;
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -129,20 +129,18 @@ class PokemonDataScreen extends StatelessWidget {
             children: [
               ElevatedButton(
                 onPressed: () async {
-                  final granted = await _requestCameraPermission(context);
-                  if (!granted) return;
+                  // bool granted = true;
+                  // if (Platform.isAndroid) {
+                  //   granted = await _requestCameraPermission(context);
+                  // }
 
-                  try {
-                    if (cameras.isEmpty) cameras = await availableCameras();
-                  } catch (_) {
-                    cameras = await availableCameras();
-                  }
+                  // if (!granted) return;
 
                   if (cameras.isNotEmpty) {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => ARScreen(camera: cameras.first),
+                        builder: (context) => ARScreen(pokemon: pokemon),
                       ),
                     );
                   } else {

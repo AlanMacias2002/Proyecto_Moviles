@@ -7,7 +7,6 @@ import 'package:proyecto_moviles/Widgets/auth_gate.dart';
 import 'package:proyecto_moviles/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 
-
 late List<CameraDescription> cameras;
 
 // Future<void> main() async {
@@ -18,9 +17,8 @@ late List<CameraDescription> cameras;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  cameras = await availableCameras();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(const MyApp());
 }
 
@@ -44,10 +42,7 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Poke-App',
-      theme: ThemeData(
-        brightness: Brightness.light,
-        primarySwatch: Colors.red,
-      ),
+      theme: ThemeData(brightness: Brightness.light, primarySwatch: Colors.red),
       darkTheme: ThemeData(
         brightness: Brightness.dark,
         primarySwatch: Colors.red,
@@ -61,7 +56,10 @@ class _MyAppState extends State<MyApp> {
               builder: (context) => IconButton(
                 icon: const Icon(Icons.person),
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const AuthGate()));
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const AuthGate()),
+                  );
                 },
               ),
             ),
@@ -70,7 +68,8 @@ class _MyAppState extends State<MyApp> {
                 icon: const Icon(Icons.settings),
                 tooltip: 'Settings',
                 onPressed: () {
-                  Navigator.push(context,
+                  Navigator.push(
+                    context,
                     MaterialPageRoute(
                       builder: (context) => SettingsScreen(
                         themeMode: _themeMode,

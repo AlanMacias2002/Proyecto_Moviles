@@ -1,52 +1,50 @@
 import 'package:flutter/material.dart';
-import 'package:camera/camera.dart';
+import 'package:arkit_plugin/arkit_plugin.dart';
+import 'package:vector_math/vector_math_64.dart' hide Colors;
 
 class ARScreen extends StatefulWidget {
-  final CameraDescription camera;
-  const ARScreen({super.key, required this.camera});
+  final Map<String, dynamic> pokemon;
+
+  const ARScreen({super.key, required this.pokemon});
 
   @override
   State<ARScreen> createState() => _ARScreenState();
 }
 
 class _ARScreenState extends State<ARScreen> {
-  late CameraController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = CameraController(widget.camera, ResolutionPreset.medium);
-    _controller.initialize().then((_) {
-      if (!mounted) return;
-      setState(() {});
-    });
-  }
+  late ARKitController arkitController;
 
   @override
   void dispose() {
-    _controller.dispose();
+    arkitController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!_controller.value.isInitialized) {
-      return const Center(child: CircularProgressIndicator());
-    }
-
     return Scaffold(
-      body: Stack(
-        children: [
-          CameraPreview(_controller),
-          Center(
-            child: Image.network(
-              'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/132.gif', // Replace with your actual GIF URL
-              width: 200,
-              height: 200,
-            ),
-          ),
-        ],
+      appBar: AppBar(title: Text("AR - ${widget.pokemon['name']}")),
+      body: ARKitSceneView(
+        onARKitViewCreated: onARKitViewCreated,
+        planeDetection: ARPlaneDetection.horizontal,
       ),
     );
+  }
+
+  void onARKitViewCreated(ARKitController controller) {
+    arkitController = controller;
+
+    // Nodo simple (una esfera azul) para probar
+    final node = ARKitNode(
+      geometry: ARKitSphere(
+        radius: 0.1,
+        materials: [
+          ARKitMaterial(diffuse: ARKitMaterialProperty.color(Colors.blue)),
+        ],
+      ),
+      position: Vector3(0, 0, -0.5),
+    );
+
+    arkitController.add(node);
   }
 }
