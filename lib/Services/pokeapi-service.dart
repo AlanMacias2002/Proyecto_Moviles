@@ -88,7 +88,7 @@ class PokeApiService {
       "stats": data["stats"],
       "species": data["species"],
       "encounters": data["location_area_encounters"],
-      "audio": null, // pokeapi no trae cries en audio directamente
+      "audio": data["cries"]["latest"],
     };
   }
 

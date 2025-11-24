@@ -3,6 +3,7 @@ import 'package:proyecto_moviles/Screens/arScreen.dart';
 import 'package:proyecto_moviles/main.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'dart:io';
+import 'package:audioplayers/audioplayers.dart';
 
 class PokemonDataScreen extends StatelessWidget {
   final Map<String, dynamic> pokemon;
@@ -93,7 +94,9 @@ class PokemonDataScreen extends StatelessWidget {
     final description = pokemon['description'] ?? 'No description available.';
     final imageUrl = pokemon['image'] ?? '';
     final stats = List<Map<String, dynamic>>.from(pokemon['stats'] ?? []);
-
+    final audio = pokemon["audio"];
+    final player = AudioPlayer();
+    
     return Scaffold(
       appBar: AppBar(title: Text(name)),
       body: ListView(
@@ -162,10 +165,8 @@ class PokemonDataScreen extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               ElevatedButton(
-                onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Feature not available')),
-                  );
+                onPressed: () async {
+                  await player.play(UrlSource(audio));
                 },
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
