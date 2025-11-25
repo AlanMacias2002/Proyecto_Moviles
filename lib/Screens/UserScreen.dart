@@ -1,13 +1,30 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:image_picker/image_picker.dart';
 
-class UserScreen extends StatelessWidget {
+class UserScreen extends StatefulWidget {
   const UserScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final user = FirebaseAuth.instance.currentUser;
+  State<UserScreen> createState() => _UserScreenState();
+}
 
+class _UserScreenState extends State<UserScreen> {
+  final user = FirebaseAuth.instance.currentUser;
+  File? _localImage;
+
+  Future<void> _pickImage() async {
+    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _localImage = File(pickedFile.path);
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),
@@ -33,11 +50,16 @@ class UserScreen extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircleAvatar(
-              radius: 50,
-              backgroundImage: user?.photoURL != null
-                  ? NetworkImage(user!.photoURL!)
-                  : const AssetImage('assets/default_avatar.png') as ImageProvider,
+            GestureDetector(
+              onTap: _pickImage, // tap avatar to change
+              child: CircleAvatar(
+                radius: 50,
+                backgroundImage: _localImage != null
+                    ? FileImage(_localImage!)
+                    : user?.photoURL != null
+                        ? NetworkImage(user!.photoURL!)
+                        : const AssetImage('assets/default_avatar.png') as ImageProvider,
+              ),
             ),
             const SizedBox(height: 20),
             Text(
