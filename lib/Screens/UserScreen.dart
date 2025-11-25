@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class UserScreen extends StatefulWidget {
   const UserScreen({super.key});
@@ -15,11 +16,20 @@ class _UserScreenState extends State<UserScreen> {
   File? _localImage;
 
   Future<void> _pickImage() async {
-    final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        _localImage = File(pickedFile.path);
-      });
+    final status = await Permission.photos.request(); // iOS
+    // or Permission.storage.request(); // Android
+
+    if (status.isGranted) {
+      final pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+      if (pickedFile != null) {
+        setState(() {
+          _localImage = File(pickedFile.path);
+        });
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Permission denied')),
+      );
     }
   }
 
@@ -51,7 +61,7 @@ class _UserScreenState extends State<UserScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             GestureDetector(
-              onTap: _pickImage, // tap avatar to change
+              onTap: _pickImage,
               child: CircleAvatar(
                 radius: 50,
                 backgroundImage: _localImage != null
