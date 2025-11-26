@@ -145,13 +145,15 @@ class _NewEditPartyScreenState extends State<NewEditPartyScreen> {
 								IconButton(
 									icon: const Icon(Icons.qr_code_2),
 									tooltip: 'QR',
-									onPressed: () {
-										Navigator.of(context).push(
-											MaterialPageRoute(
-												builder: (_) => ShareQrScreen(),
-											),
-										);
-									},
+									onPressed: widget.partyId == null
+											? null
+											: () {
+													Navigator.of(context).push(
+														MaterialPageRoute(
+															builder: (_) => ShareQrScreen(partyId: widget.partyId!),
+														),
+													);
+												},
 								),
 					IconButton(
 						icon: const Icon(Icons.help_outline),
@@ -188,7 +190,6 @@ class _NewEditPartyScreenState extends State<NewEditPartyScreen> {
 									],
 									onChanged: (v) {
 										if (v != null) setState(() => _format = v);
-										_snack('Funcion cambiar formato');
 									},
 								),
 							),
@@ -212,7 +213,6 @@ class _NewEditPartyScreenState extends State<NewEditPartyScreen> {
 									],
 									onChanged: (v) {
 										if (v != null) setState(() => _style = v);
-										_snack('funcion cambiar tipo de equipo');
 									},
 								),
 							),

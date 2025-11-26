@@ -55,4 +55,38 @@ class PartyRepository {
         .orderBy('updatedAt', descending: true)
         .snapshots();
   }
+
+  // ====== Compartir / Importar ======
+  CollectionReference<Map<String, dynamic>> get _sharedParties =>
+      _db.collection('shared_parties');
+
+  Future<String> shareParty(String partyId) async {
+    final uid = await _requireUid();
+    final doc = await _userParties(uid).doc(partyId).get();
+    if (!doc.exists) throw StateError('Party no encontrada');
+    final partyData = Map<String, dynamic>.from(doc.data()!);
+    // Remover timestamps internos para snapshot limpio
+    partyData.remove('createdAt');
+    partyData.remove('updatedAt');
+    final shareDoc = await _sharedParties.add({
+      'ownerId': uid,
+      'createdAt': FieldValue.serverTimestamp(),
+      'party': partyData,
+    });
+    return shareDoc.id;
+  }
+
+  Future<Party> fetchSharedParty(String shareId) async {
+    final doc = await _sharedParties.doc(shareId).get();
+    if (!doc.exists) throw StateError('QR inválido o expirado');
+    final data = doc.data()!;
+    final partyJson = Map<String, dynamic>.from(data['party'] as Map);
+    return Party.fromJson(partyJson);
+  }
+
+  Future<String> importSharedParty(String shareId) async {
+    final party = await fetchSharedParty(shareId);
+    // crear nueva party para el usuario actual
+    return createParty(party);
+  }
 }
