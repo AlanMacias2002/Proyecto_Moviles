@@ -9,7 +9,6 @@
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Se necesita acceso a la fototeca para mostrar fotos guardadas</string>
 	<key>CFBundleDevelopmentRegion</key>
-	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
 	<string>Proyecto Moviles</string>
